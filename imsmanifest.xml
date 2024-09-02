@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="_5fSSaeb6gjf_course_id" version="1.0" xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+    <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+      <general>
+        <title>
+          <langstring xml:lang="x-none">Jaytosh_Srivastava_CV</langstring>
+        </title>
+      </general>
+      <lifecycle>
+        <version>
+          <langstring xml:lang="x-none">1</langstring>
+        </version>
+        <status>
+          <source>
+            <langstring xml:lang="x-none">LOMv1.0</langstring>
+          </source>
+          <value>
+            <langstring xml:lang="x-none">Final</langstring>
+          </value>
+        </status>
+      </lifecycle>
+      <metametadata>
+        <metadatascheme>ADL SCORM 1.2</metadatascheme>
+      </metametadata>
+      <educational>
+        <typicallearningtime>
+          <datetime>PT0H0M0S</datetime>
+        </typicallearningtime>
+      </educational>
+      <rights>
+        <cost>
+          <source>
+            <langstring xml:lang="x-none">LOMv1.0</langstring>
+          </source>
+          <value>
+            <langstring xml:lang="x-none">yes</langstring>
+          </value>
+        </cost>
+        <copyrightandotherrestrictions>
+          <source>
+            <langstring xml:lang="x-none">LOMv1.0</langstring>
+          </source>
+          <value>
+            <langstring xml:lang="x-none">yes</langstring>
+          </value>
+        </copyrightandotherrestrictions>
+      </rights>
+    </lom>
+  </metadata>
+  <organizations default="Jaytosh_Srivastava_CV_ORG">
+    <organization identifier="Jaytosh_Srivastava_CV_ORG">
+      <title>Jaytosh_Srivastava_CV</title>
+      <item identifier="Hongs_Kitchen_Seasoning_an_Everyday_Wok_SCO" isvisible="true" identifierref="__5fSSaeb6gjf_course_id_RES">
+        <title>Jaytosh_Srivastava_CV</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="__5fSSaeb6gjf_course_id_RES" type="webcontent" href="index_lms.html" adlcp:scormtype="sco">
+      <file href="story_content/thumbnail.jpg" />
+      <file href="mobile/6Gj0hgGwyN0_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/5oSzLvfvMqi_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/6Kt7AA5Z6I1_DX140_DY140_CX105_CY105.png" />
+      <file href="mobile/60fbI57mQql_DX140_DY140_CX105_CY105.png" />
+      <file href="mobile/67A7h5zTCZv_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/6AucIMwt9Ck_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/5oqeYMG4y8R_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/6HPCErRyrR0_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/671kNA88Coc_DX132_DY132_CX99_CY99.png" />
+      <file href="mobile/6hbBPgc73UC_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/5aVCHcTnLqF_DX112_DY112_CX84_CY84.png" />
+      <file href="mobile/6VjMH6538Iw_DX1530_DY1530_CX689_CY765.png" />
+      <file href="mobile/5ncL6qVEB9v_DX558_DY558_CX418_CY162.jpg" />
+      <file href="mobile/5dLmEdpCq4f_DX606_DY606_CX416_CY121.png" />
+      <file href="mobile/5qT9ZTl9nUc_DX654_DY654_CX490_CY276.png" />
+      <file href="mobile/5pYlfvY8D6c_DX734_DY734_CX367_CY137.jpg" />
+      <file href="mobile/5ynAfkmRZng_P_0_56_264_136_DX528_DY528_CX264_CY136.png" />
+      <file href="mobile/6XTi8HY6mB4_DX398_DY398_CX199_CY110.jpg" />
+      <file href="mobile/5ysaodrjXcC_DX618_DY618_CX433_CY112.jpg" />
+      <file href="mobile/5zSXXZvZ2V8_DX282_DY282_CX211_CY84.jpg" />
+      <file href="mobile/6avkZzIJZH8_DX482_DY482_CX241_CY78.jpg" />
+      <file href="mobile/6mKh0s0aG97_DX188_DY188_CX94_CY93.jpg" />
+      <file href="mobile/6ZofYddZ1Af_DX200_DY200_CX95_CY100.jpg" />
+      <file href="mobile/6Azu4GrQdYK_DX198_DY198_CX99_CY94.jpg" />
+      <file href="mobile/6mTDRa2h8HU_DX196_DY196_CX98_CY90.jpg" />
+      <file href="mobile/5vGXWdUNPfB_DX164_DY164_CX118_CY115.jpg" />
+      <file href="mobile/5kebmrQFZzB_DX164_DY164_CX121_CY118.jpg" />
+      <file href="mobile/5jx7bwXuVIH_DX164_DY164_CX87_CY85.jpg" />
+      <file href="mobile/5xT5hXE45RJ_DX198_DY198_CX148_CY136.jpg" />
+      <file href="mobile/6YzbBPnEYCF_DX200_DY200_CX150_CY132.jpg" />
+      <file href="mobile/6gmemgnOyru_DX202_DY202_CX151_CY143.jpg" />
+      <file href="mobile/6R1mR38yaZU_DX214_DY214_CX160_CY146.jpg" />
+      <file href="mobile/6WK3yFS3j0v_DX374_DY374_CX187_CY60.jpg" />
+      <file href="meta.xml" />
+      <file href="story_content/frame.json" />
+      <file href="story_content/user.js" />
+      <file href="html5/data/css/output.min.css" />
+      <file href="html5/data/js/5zXopEzcEtc.js" />
+      <file href="html5/data/js/data.js" />
+      <file href="html5/data/js/frame.js" />
+      <file href="html5/data/js/paths.js" />
+      <file href="html5/lib/scripts/app.min.js" />
+      <file href="html5/lib/stylesheets/main.min.css" />
+      <file href="html5/lib/stylesheets/mobile-fonts/open-sans-bold.woff" />
+      <file href="html5/lib/stylesheets/mobile-fonts/open-sans-light.woff" />
+      <file href="html5/lib/stylesheets/mobile-fonts/open-sans-regular.woff" />
+      <file href="story.html" />
+      <file href="story_html5.html" />
+      <file href="story_content/blank.html" />
+      <file href="story_content/story.js" />
+      <file href="index_lms.html" />
+      <file href="index_lms_html5.html" />
+      <file href="lms/AICCComm.html" />
+      <file href="lms/AICCFunctions.js" />
+      <file href="lms/API.js" />
+      <file href="lms/APIConstants.js" />
+      <file href="lms/blank.html" />
+      <file href="lms/browsersniff.js" />
+      <file href="lms/Configuration.js" />
+      <file href="lms/goodbye.html" />
+      <file href="lms/lms.js" />
+      <file href="lms/LMSAPI.js" />
+      <file href="lms/NONEFunctions.js" />
+      <file href="lms/SCORM2004Functions.js" />
+      <file href="lms/SCORMFunctions.js" />
+      <file href="lms/UtilityFunctions.js" />
+    </resource>
+  </resources>
+</manifest>
