@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jaytosh Srivastava | Learning Experience Designer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Cyan */
+            --secondary: #8b5cf6; /* Violet */
+            --bg-base: #020617; /* Slate 950 */
+            --glass-bg: rgba(15, 23, 42, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            margin: 0;
+            overflow: hidden; /* Handle scrolling inside main */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        h1, h2, h3, h4, h5, h6, .outfit-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Interactive Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* Background Gradient Blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -2;
+            opacity: 0.5;
+            animation: float 20s infinite alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(14, 165, 233, 0.3); }
+        .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: rgba(139, 92, 246, 0.2); animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 15%) scale(1.2); }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30,41,59,0.5) 0%, rgba(15,23,42,0.6) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.5rem;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(14, 165, 233, 0.3);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* --- Navigation Dock --- */
+        .dock {
+            position: fixed;
+            z-index: 50;
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Desktop Dock (Left) */
+        @media (min-width: 768px) {
+            .dock {
+                flex-direction: column;
+                top: 50%;
+                left: 2rem;
+                transform: translateY(-50%);
+            }
+        }
+        /* Mobile Dock (Bottom) */
+        @media (max-width: 767px) {
+            .dock {
+                flex-direction: row;
+                bottom: 1.5rem;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                justify-content: space-around;
+            }
+        }
+
+        .dock-item {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .dock-item::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            margin-left: 15px;
+            background: var(--primary);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 767px) {
+            .dock-item::before {
+                left: 50%;
+                top: -40px;
+                transform: translateX(-50%);
+                margin-left: 0;
+            }
+        }
+
+        .dock-item:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.1);
+        }
+        .dock-item:hover::before { opacity: 1; }
+
+        .dock-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* --- Content Layout --- */
+        .main-container {
+            height: 100vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        @media (min-width: 768px) {
+            .main-container { padding: 4rem 4rem 4rem 10rem; }
+        }
+        @media (max-width: 767px) {
+            .main-container { padding: 2rem 1.5rem 8rem 1.5rem; }
+        }
+
+        .section-view {
+            display: none;
+            min-height: 100%;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .section-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- STREAMING_CHUNK:Styling specific components --- */
+        
+        /* Profile Image Upload styles */
+        .profile-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            background: linear-gradient(45deg, #1e293b, #0f172a);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 0 30px rgba(14, 165, 233, 0.2);
+            overflow: hidden;
+            animation: morphing 10s ease-in-out infinite alternate;
+            border: 2px solid rgba(14, 165, 233, 0.3);
+            transition: all 0.3s;
+        }
+        .profile-container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.4);
+        }
+
+        @keyframes morphing {
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+            67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+            100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .upload-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        .profile-container:hover .upload-overlay { opacity: 1; }
+        .profile-container:hover .profile-image { opacity: 0.4; }
+
+        /* Typography Highlights */
+        .text-gradient {
+            background: linear-gradient(to right, #38bdf8, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Timeline Styles */
+        .timeline-track-custom {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+        .timeline-progress-custom {
+            position: absolute;
+            top: 0; left: 0; height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 0.3s ease;
+        }
+        .timeline-thumb-custom {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+            cursor: grab;
+            transition: left 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .timeline-thumb-custom::after {
+            content: '';
+            width: 10px; height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* Glitch/Typewriter effect for Intro */
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid var(--primary);
+            white-space: nowrap;
+            margin: 0;
+            letter-spacing: .05em;
+            animation: typing 2.5s steps(30, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--primary); } }
+        
+        /* Quick fix for mobile typewriter wrapping */
+        @media (max-width: 640px) {
+            .typewriter {
+                white-space: normal;
+                border-right: none;
+                animation: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Ambient Backgrounds -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation Dock -->
+    <nav class="dock glass">
+        <!-- Using FontAwesome Icons -->
+        <div class="dock-item active" onclick="switchTab('about')" data-tooltip="Profile">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div class="dock-item" onclick="switchTab('experience')" data-tooltip="Experience">
+            <i class="fa-solid fa-timeline"></i>
+        </div>
+        <div class="dock-item" onclick="switchTab('portfolio')" data-tooltip="Projects">
+            <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div class="dock-item" onclick="switchTab('skills')" data-tooltip="Toolkit">
+            <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div class="dock-item" onclick="switchTab('contact')" data-tooltip="Connect">
+            <i class="fa-regular fa-paper-plane"></i>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-container relative z-10">
+        
+        <!-- 1. ABOUT SECTION -->
+        <section id="about" class="section-view active justify-center">
+            <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-12 max-w-7xl mx-auto w-full">
+                
+                <!-- Text Content -->
+                <div class="w-full md:w-[60%] space-y-6 text-center md:text-left z-10">
+                    <div class="inline-block px-4 py-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-300 text-sm font-semibold tracking-wider mb-2">
+                        HELLO, I AM
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-extrabold outfit-font tracking-tight leading-tight">
+                        JAYTOSH <br class="hidden md:block">
+                        <span class="text-gradient">SRIVASTAVA</span>
+                    </h1>
+                    <h2 class="text-xl md:text-3xl font-light text-slate-300 outfit-font typewriter">
+                        Learning Experience Designer
+                    </h2>
+                    
+                    <p class="text-slate-400 text-base md:text-lg leading-relaxed max-w-2xl font-light">
+                        With 14+ years innovating in learning technology, I craft immersive, global training experiences. I specialize in bridging the gap between complex information and intuitive learning journeys—transforming skill gaps into measurable business triumphs through strategic design and digital ecosystems.
+                    </p>
+                    
+                    <div class="pt-4 flex flex-wrap gap-4 justify-center md:justify-start">
+                        <button onclick="switchTab('contact')" class="px-8 py-3 rounded-full bg-white text-slate-900 font-bold hover:bg-sky-100 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                            Let's Collaborate
+                        </button>
+                        <button onclick="switchTab('portfolio')" class="px-8 py-3 rounded-full border border-slate-600 hover:border-sky-400 hover:bg-sky-900/20 transition-all font-semibold">
+                            View Work
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Interactive Profile Image -->
+                <div class="w-full md:w-[40%] flex justify-center z-10 relative">
+                    <div class="profile-container group">
+                        <!-- Default Placeholder/Uploaded Image -->
+                        <img id="profile-preview" src="https://placehold.co/600x600/0f172a/38bdf8?text=JS" alt="Profile" class="profile-image">
+                        
+                        <!-- Upload Overlay -->
+                        <label for="image-upload" class="upload-overlay">
+                            <i class="fa-solid fa-camera text-3xl mb-2 text-white"></i>
+                            <span class="text-white font-medium text-sm">Upload Photo</span>
+                        </label>
+                        <input type="file" id="image-upload" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                    </div>
+                    
+                    <!-- Decorative Elements around image -->
+                    <div class="absolute top-10 -right-4 w-12 h-12 rounded-full bg-purple-500/20 blur-xl"></div>
+                    <div class="absolute bottom-10 -left-4 w-16 h-16 rounded-full bg-cyan-500/20 blur-xl"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. EXPERIENCE SECTION -->
+        <section id="experience" class="section-view">
+            <div class="max-w-6xl w-full mx-auto flex flex-col h-full">
+                <div class="mb-10 text-center md:text-left">
+                    <h2 class="text-3xl md:text-5xl font-extrabold outfit-font mb-2">CAREER <span class="text-gradient">JOURNEY</span></h2>
+                    <p class="text-slate-400 italic">Navigate the timeline to explore my roles.</p>
+                </div>
+
+                <!-- Neon Timeline Slider -->
+                <div class="relative w-full mb-16 select-none mt-4 px-4" id="timeline-container">
+                    <div class="timeline-track-custom" id="timeline-track">
+                        <div class="timeline-progress-custom" id="timeline-progress" style="width: 10%;"></div>
+                        <div class="timeline-thumb-custom" id="timeline-thumb" style="left: 10%;"></div>
+                    </div>
+                    <!-- Markers Container -->
+                    <div id="timeline-markers" class="absolute top-8 w-full flex justify-between px-4 text-sm font-semibold text-slate-500 transition-colors pointer-events-none">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Glassmorphism Experience Card -->
+                <div class="glass-card flex-1 p-8 md:p-12 relative overflow-hidden transition-opacity duration-300" id="experience-details-card">
+                    <!-- Background accent -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-sky-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-8 relative z-10 gap-6">
+                        <div>
+                            <div class="inline-block px-3 py-1 rounded bg-white/5 border border-white/10 text-xs text-sky-400 mb-4 font-mono tracking-wide" id="exp-year-badge">2024 - Present</div>
+                            <h3 class="text-2xl md:text-4xl font-bold outfit-font mb-2 text-white" id="exp-company">Restaurant Brands International</h3>
+                            <h4 class="text-lg md:text-xl text-purple-300 font-medium mb-1" id="exp-role">Sr. Learning Experience Designer – Project Lead</h4>
+                            <p class="text-slate-400 text-sm flex items-center gap-2" id="exp-location">
+                                <i class="fa-solid fa-location-dot"></i> Office: Zug, Switzerland – Remote India
+                            </p>
+                        </div>
+                        <div class="h-16 flex items-center justify-end min-w-[120px]" id="exp-logo-container">
+                            <!-- Logo HTML injected here -->
+                        </div>
+                    </div>
+
+                    <ul class="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed relative z-10" id="exp-bullets">
+                        <!-- Bullets injected here -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PORTFOLIO SECTION -->
+        <section id="portfolio" class="section-view">
+            <div class="max-w-6xl w-full mx-auto">
+                <h2 class="text-3xl md:text-5xl font-extrabold outfit-font mb-6 text-center md:text-left">DIGITAL <span class="text-gradient">SOLUTIONS</span></h2>
+                <p class="text-slate-400 max-w-3xl mb-12 text-center md:text-left leading-relaxed">
+                    A curated showcase of interactive modules, e-learning environments, and pedagogical designs engineered to empower learners and scale organizational capabilities.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Org Card -->
+                    <div class="glass-card p-8 group">
+                        <div class="w-12 h-12 rounded-full bg-sky-500/20 flex items-center justify-center text-sky-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-building text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-6 outfit-font">Organizational Impact</h3>
+                        <div class="space-y-4">
+                            <a href="#" class="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-sky-500/30 transition-all group/link">
+                                <i class="fa-solid fa-arrow-right text-slate-500 group-hover/link:text-sky-400 -rotate-45 transition-colors"></i>
+                                <span class="font-medium">Brugg Cables Academy</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-sky-500/30 transition-all group/link">
+                                <i class="fa-solid fa-arrow-right text-slate-500 group-hover/link:text-sky-400 -rotate-45 transition-colors"></i>
+                                <span class="font-medium">Honeywell Training Hub</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Personal Card -->
+                    <div class="glass-card p-8 group">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-flask text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 outfit-font">Creative Lab</h3>
+                        <p class="text-sm text-slate-400 mb-6">Articulate Storyline Prototypes</p>
+                        
+                        <div class="space-y-3 mb-8">
+                            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 transition-colors text-slate-200 hover:text-white border-l-2 border-transparent hover:border-purple-400">Hong's Kitchen</a>
+                            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 transition-colors text-slate-200 hover:text-white border-l-2 border-transparent hover:border-purple-400">Animated Slider Module</a>
+                            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 transition-colors text-slate-200 hover:text-white border-l-2 border-transparent hover:border-purple-400">Tify Learning Environment</a>
+                            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 transition-colors text-slate-200 hover:text-white border-l-2 border-transparent hover:border-purple-400">Vertical Scroll Concept</a>
+                        </div>
+
+                        <a href="https://www.behance.net/jaytosh" target="_blank" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 font-semibold uppercase text-sm tracking-wider">
+                            <i class="fa-brands fa-behance text-lg"></i> View Full Behance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SKILLS SECTION -->
+        <section id="skills" class="section-view">
+            <div class="max-w-6xl w-full mx-auto">
+                <h2 class="text-3xl md:text-5xl font-extrabold outfit-font mb-10 text-center md:text-left">TOOLKIT & <span class="text-gradient">EXPERTISE</span></h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Authoring -->
+                    <div class="glass-card p-6 md:col-span-2 flex flex-col justify-center">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Course Authoring</h3>
+                        <div class="flex flex-wrap items-center gap-8 md:gap-16">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xl border border-blue-500/30">A</div>
+                                <div>
+                                    <div class="font-bold text-xl">Articulate 360</div>
+                                    <div class="text-xs text-slate-400">Storyline | Rise</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xl border border-emerald-500/30">L</div>
+                                <div>
+                                    <div class="font-bold text-xl">LXT</div>
+                                    <div class="text-xs text-slate-400">Authoring Tool</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Tools -->
+                    <div class="glass-card p-6 relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"></div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">AI Augmentation</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 text-purple-300 font-medium"><i class="fa-solid fa-language w-6"></i> Smartcat</div>
+                            <div class="flex items-center gap-3 text-emerald-400 font-medium"><i class="fa-solid fa-robot w-6"></i> ChatGPT</div>
+                            <div class="flex items-center gap-3 text-blue-400 font-medium"><i class="fa-solid fa-sparkles w-6"></i> Gemini</div>
+                            <div class="flex items-center gap-3 text-sky-300 font-medium"><i class="fa-brands fa-microsoft w-6"></i> Copilot</div>
+                        </div>
+                    </div>
+
+                    <!-- Multimedia -->
+                    <div class="glass-card p-6 md:col-span-2">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Multimedia Design (Adobe CC)</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <!-- Styling badges like Adobe icons -->
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg border bg-[#001e36] text-[#31a8ff] border-[#31a8ff]/50 shadow-[0_0_15px_rgba(49,168,255,0.2)]">Ps</div>
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg border bg-[#330000] text-[#ff9a00] border-[#ff9a00]/50 shadow-[0_0_15px_rgba(255,154,0,0.2)]">Ai</div>
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg border bg-[#00005b] text-[#9999ff] border-[#9999ff]/50 shadow-[0_0_15px_rgba(153,153,255,0.2)]">Ae</div>
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg border bg-[#00005b] text-[#ea77ff] border-[#ea77ff]/50 shadow-[0_0_15px_rgba(234,119,255,0.2)]">Pr</div>
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg border bg-[#2c0a40] text-[#ff61f6] border-[#ff61f6]/50 shadow-[0_0_15px_rgba(255,97,246,0.2)]">An</div>
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg border bg-[#2a001a] text-[#ff3366] border-[#ff3366]/50 shadow-[0_0_15px_rgba(255,51,102,0.2)]">Id</div>
+                        </div>
+                    </div>
+
+                    <!-- LMS -->
+                    <div class="glass-card p-6 flex flex-col justify-between">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">LMS Platforms</h3>
+                        <div class="flex flex-col gap-4">
+                            <div class="bg-white/5 p-4 rounded-lg flex items-center gap-3">
+                                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-graduation-cap"></i></div>
+                                <span class="font-bold tracking-widest">ZENSAI</span>
+                            </div>
+                            <div class="bg-white/5 p-4 rounded-lg flex items-center gap-3">
+                                <div class="text-blue-500 font-extrabold text-2xl">docebo<span class="text-sm align-top">®</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CONTACT SECTION -->
+        <section id="contact" class="section-view">
+            <div class="max-w-5xl w-full mx-auto flex flex-col justify-center h-full">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-5xl font-extrabold outfit-font mb-4">LET'S <span class="text-gradient">CONNECT</span></h2>
+                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">Open for collaborations, project leadership, and shaping the future of learning experiences.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <!-- Main Contact Panel -->
+                    <div class="glass-card p-8 md:p-12 lg:col-span-3 flex flex-col justify-center space-y-8 relative overflow-hidden group">
+                        <div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
+                        
+                        <a href="mailto:jaytosh@gmail.com" class="flex items-start gap-6 hover:translate-x-2 transition-transform">
+                            <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-sky-400 text-2xl shrink-0"><i class="fa-solid fa-envelope"></i></div>
+                            <div>
+                                <h4 class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Email</h4>
+                                <p class="text-xl md:text-2xl font-medium text-white">jaytosh@gmail.com</p>
+                            </div>
+                        </a>
+
+                        <div class="flex items-start gap-6 hover:translate-x-2 transition-transform">
+                            <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-sky-400 text-2xl shrink-0"><i class="fa-solid fa-phone"></i></div>
+                            <div>
+                                <h4 class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Phone</h4>
+                                <p class="text-xl md:text-2xl font-medium text-white">+91-9958243502</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Panels -->
+                    <div class="lg:col-span-2 flex flex-col gap-6">
+                        <div class="glass-card p-8 flex-1 flex flex-col justify-center items-center text-center hover:border-purple-500/50">
+                            <i class="fa-solid fa-location-dot text-3xl text-purple-400 mb-4"></i>
+                            <h4 class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Location</h4>
+                            <p class="text-lg text-white">Gurgaon, Haryana - India</p>
+                        </div>
+
+                        <div class="glass-card p-8 flex-1 flex flex-col justify-center items-center text-center">
+                            <h4 class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-4">Social Network</h4>
+                            <div class="flex gap-4">
+                                <a href="https://www.linkedin.com/in/jaytoshsrivastava" target="_blank" class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-600 hover:scale-110 transition-all text-xl">
+                                    <i class="fa-brands fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://www.behance.net/jaytosh" target="_blank" class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 hover:scale-110 transition-all text-xl">
+                                    <i class="fa-brands fa-behance"></i>
+                                </a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-purple-600 hover:scale-110 transition-all text-xl" title="MS Teams">
+                                    <i class="fa-solid fa-users"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 1. Navigation & Tab Switching ---
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            
+            // Remove active from dock items
+            document.querySelectorAll('.dock-item').forEach(item => item.classList.remove('active'));
+
+            // Show selected
+            document.getElementById(tabId).classList.add('active');
+
+            // Find matching dock item and set active
+            const iconMap = { 'about': 0, 'experience': 1, 'portfolio': 2, 'skills': 3, 'contact': 4 };
+            document.querySelectorAll('.dock-item')[iconMap[tabId]].classList.add('active');
+
+            // Reset scroll position
+            document.querySelector('.main-container').scrollTop = 0;
+            
+            if(tabId === 'experience') {
+                setTimeout(updateTimelineUI, 100); // Allow render before calculation
+            }
+        }
+
+        // --- 2. Image Upload Logic ---
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Apply to image source
+                    document.getElementById('profile-preview').src = e.target.result;
+                    // Reset object fit based on if it's horizontal or vertical could be added here, 
+                    // but object-cover in CSS usually handles it well.
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- 3. Experience Timeline Data ---
+        const experienceData = [
+            {
+                year: '2024', position: 10,
+                badge: '2024 - Present',
+                company: "Restaurant Brands International",
+                role: "Sr. Learning Experience Designer – Project Lead",
+                location: "Zug, Switzerland (Remote)",
+                logoHtml: `<div class="text-red-500 font-black text-4xl italic tracking-tighter">rbi</div>`,
+                bullets: [
+                    "Lead the design and development of engaging, experience-driven learning solutions, including digital modules, blended programs, and tools.",
+                    "Partner with SMEs to translate complex concepts into intuitive experiences.",
+                    "Conduct skill gap analysis and define learning strategies and frameworks.",
+                    "Oversee project planning, global content delivery, and quality assurance."
+                ]
+            },
+            {
+                year: '2021', position: 25,
+                badge: '2021 - 2024',
+                company: "Brugg Cables, Terna Group",
+                role: "Content Manager Brugg Cables Academy",
+                location: "Corporate HQ",
+                logoHtml: `<div class="text-sky-500 font-bold text-2xl tracking-widest border border-white/20 p-2 rounded bg-white/5">BRUGG</div>`,
+                bullets: [
+                    "Developed and managed the eLearning content strategy for the Academy.",
+                    "Collaborated with SMEs for independent study, blended learning, and ILT.",
+                    "Managed the LMS ensuring materials were up-to-date and accessible.",
+                    "Standardized templates and managed end-to-end multimedia production."
+                ]
+            },
+            {
+                year: '2016', position: 45,
+                badge: '2016 - 2021',
+                company: "Honeywell International",
+                role: "Senior Graphic Designer Specialist",
+                location: "Global Training",
+                logoHtml: `<div class="text-red-600 font-black text-3xl tracking-tight">Honeywell</div>`,
+                bullets: [
+                    "<strong class='text-sky-300'>Core Focus:</strong> Delivered end-to-end e-Learning solutions, converting mainframe content into intuitive experiences.",
+                    "Facilitated product visions via research, wire-framing, and prototyping.",
+                    "Analyzed project efforts and designed robust presales architecture.",
+                    "Implemented HUE guidelines across global e-Learning modules."
+                ]
+            },
+            {
+                year: '2014', position: 65,
+                badge: '2014 - 2016',
+                company: "Kshemya Infosys",
+                role: "Senior Graphic Designer",
+                location: "India",
+                logoHtml: `<div class="text-blue-400 font-bold text-2xl italic flex items-center">Kshemya</div>`,
+                bullets: [
+                    "Provided e-Learning solutions aligning with business requirements.",
+                    "Managed project analysis, clients, vendors, and work allocation.",
+                    "Developed prototypes and conducted design reviews.",
+                    "Mentored junior graphic designers and managed recruitment screening."
+                ]
+            },
+            {
+                year: '2013', position: 80,
+                badge: '2013',
+                company: "Smart Tech Toonz",
+                role: "Graphic Designer",
+                location: "India",
+                logoHtml: `<div class="text-white font-bold text-xl">TechToonz</div>`,
+                bullets: [
+                    "Specialized in K-12 learning courses using Flash, Photoshop, and Illustrator.",
+                    "Developed custom user interfaces for interactive modules.",
+                    "Generated complex animation frames for educational content."
+                ]
+            },
+            {
+                year: '2010', position: 95,
+                badge: '2010 - 2012',
+                company: "Piron & FCS Software",
+                role: "Graphic Designer / Trainee",
+                location: "India",
+                logoHtml: `<div class="text-slate-400 font-mono text-lg">Piron / FCS</div>`,
+                bullets: [
+                    "Developed Tata Class Edge K12 Learning Modules.",
+                    "Created online training materials for global brands like Canon.",
+                    "Built extensive graphic libraries and asset repositories."
+                ]
+            }
+        ];
+
+        let currentExpIndex = 0;
+        const trackEl = document.getElementById('timeline-track');
+        const progressEl = document.getElementById('timeline-progress');
+        const thumbEl = document.getElementById('timeline-thumb');
+        const cardEl = document.getElementById('experience-details-card');
+        const markersContainer = document.getElementById('timeline-markers');
+
+        function initTimeline() {
+            markersContainer.innerHTML = '';
+            experienceData.forEach((exp, idx) => {
+                const marker = document.createElement('div');
+                marker.style.position = 'absolute';
+                marker.style.left = `calc(${exp.position}% - 15px)`; // Center text
+                marker.innerText = exp.year;
+                marker.className = `cursor-pointer transition-colors hover:text-white ${idx===0 ? 'text-white' : ''}`;
+                marker.onclick = () => selectExperience(idx);
+                markersContainer.appendChild(marker);
+            });
+            loadExperienceData(0);
+        }
+
+        function selectExperience(index) {
+            if(index === currentExpIndex) return;
+            currentExpIndex = index;
+            const exp = experienceData[index];
+            
+            progressEl.style.width = `${exp.position}%`;
+            thumbEl.style.left = `${exp.position}%`;
+
+            Array.from(markersContainer.children).forEach((el, i) => {
+                el.className = `cursor-pointer transition-colors hover:text-white ${i===index ? 'text-white' : 'text-slate-500'}`;
+            });
+
+            cardEl.style.opacity = 0;
+            cardEl.style.transform = "translateY(10px)";
+            
+            setTimeout(() => {
+                loadExperienceData(index);
+                cardEl.style.opacity = 1;
+                cardEl.style.transform = "translateY(0)";
+            }, 300);
+        }
+
+        function loadExperienceData(index) {
+            const exp = experienceData[index];
+            document.getElementById('exp-year-badge').innerText = exp.badge;
+            document.getElementById('exp-company').innerHTML = exp.company;
+            document.getElementById('exp-role').innerHTML = exp.role;
+            document.getElementById('exp-location').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${exp.location}`;
+            document.getElementById('exp-logo-container').innerHTML = exp.logoHtml;
+
+            const ul = document.getElementById('exp-bullets');
+            ul.innerHTML = '';
+            exp.bullets.forEach(bullet => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-3";
+                li.innerHTML = `<i class="fa-solid fa-check text-sky-400 mt-1 flex-shrink-0"></i> <span>${bullet}</span>`;
+                ul.appendChild(li);
+            });
+        }
+
+        // Drag Logic
+        let isDragging = false;
+        thumbEl.addEventListener('mousedown', () => isDragging = true);
+        thumbEl.addEventListener('touchstart', () => isDragging = true);
+        
+        const stopDrag = () => {
+            if(isDragging) {
+                isDragging = false;
+                const currentLeft = parseFloat(thumbEl.style.left);
+                let closest = 0;
+                let minDiff = 100;
+                experienceData.forEach((exp, idx) => {
+                    const diff = Math.abs(exp.position - currentLeft);
+                    if(diff < minDiff) { minDiff = diff; closest = idx; }
+                });
+                selectExperience(closest);
+            }
+        };
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('touchend', stopDrag);
+
+        const onMove = (e) => {
+            if(!isDragging) return;
+            const rect = trackEl.getBoundingClientRect();
+            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            if (!clientX) return;
+            
+            let x = clientX - rect.left;
+            x = Math.max(0, Math.min(x, rect.width));
+            const pct = (x / rect.width) * 100;
+            
+            thumbEl.style.left = `${pct}%`;
+            progressEl.style.width = `${pct}%`;
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove);
+
+        trackEl.addEventListener('click', (e) => {
+            const rect = trackEl.getBoundingClientRect();
+            const pct = ((e.clientX - rect.left) / rect.width) * 100;
+            let closest = 0, minDiff = 100;
+            experienceData.forEach((exp, idx) => {
+                const diff = Math.abs(exp.position - pct);
+                if(diff < minDiff) { minDiff = diff; closest = idx; }
+            });
+            selectExperience(closest);
+        });
+
+        function updateTimelineUI() {
+            // Trigger layout recalculation if hidden
+        }
+
+        // --- 4. Interactive Canvas Background (Nodes/Synapses) ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let w, h;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0 || this.x > w) this.vx *= -1;
+                if(this.y < 0 || this.y > h) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(14, 165, 233, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = window.innerWidth < 768 ? 40 : 80;
+            for(let i=0; i<count; i++) particles.push(new Particle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, w, h);
+            
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // Connect near particles
+                for(let j=i+1; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if(dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(139, 92, 246, ${0.2 - dist/600})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+
+        // Initialize Everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initTimeline();
+            resize();
+            initParticles();
+            animateCanvas();
+            
+            // Ensure first tab is correctly scaled
+            switchTab('about');
+        });
+
+    </script>
+</body>
+</html>
